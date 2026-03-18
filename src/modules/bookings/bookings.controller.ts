@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -10,6 +10,8 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { UserRole } from '../users/enums/user-role.enum';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
+import { UpdateBookingDto } from './dto/update-booking.dto';
+import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
 
 @ApiTags('Bookings')
 @ApiBearerAuth()
@@ -30,5 +32,29 @@ export class BookingsController {
   @ApiOperation({ summary: 'List bookings' })
   findAll() {
     return this.bookingsService.findAll();
+  }
+
+  @Get(':id')
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.INFLUENCER)
+  @ApiOperation({ summary: 'Get booking by ID' })
+  findOne(@Param('id') id: string) {
+    return this.bookingsService.findOne(id);
+  }
+
+  @Patch(':id')
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN)
+  @ApiOperation({ summary: 'Update booking details' })
+  update(@Param('id') id: string, @Body() updateBookingDto: UpdateBookingDto) {
+    return this.bookingsService.update(id, updateBookingDto);
+  }
+
+  @Patch(':id/status')
+  @Roles(UserRole.CUSTOMER, UserRole.ADMIN, UserRole.INFLUENCER)
+  @ApiOperation({ summary: 'Update booking lifecycle status' })
+  updateStatus(
+    @Param('id') id: string,
+    @Body() updateBookingStatusDto: UpdateBookingStatusDto,
+  ) {
+    return this.bookingsService.updateStatus(id, updateBookingStatusDto.status);
   }
 }

@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppLoggerService } from 'src/common/logger/logger.service';
+import { SocketService } from 'src/modules/socket/socket.service';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 import { UserRole } from '../users/enums/user-role.enum';
 import { CreateCampaignDto } from './dto/create-campaign.dto';
@@ -20,6 +21,7 @@ export class CampaignsService {
     @InjectRepository(Campaign)
     private readonly campaignsRepository: Repository<Campaign>,
     private readonly logger: AppLoggerService,
+    private readonly socketService: SocketService,
   ) {}
 
   async create(
@@ -51,6 +53,19 @@ export class CampaignsService {
       `Campaign ${savedCampaign.id} created successfully for user ${currentUser.sub}`,
       CampaignsService.name,
     );
+
+    this.socketService.emitCampaignCreated({
+      campaignId: savedCampaign.id,
+      customerId: savedCampaign.customerId,
+      title: savedCampaign.title,
+      status: savedCampaign.status,
+    });
+
+    this.socketService.emitNotification({
+      type: 'campaign.created',
+      message: `Campaign ${savedCampaign.title} was created successfully.`,
+      entityId: savedCampaign.id,
+    });
 
     return savedCampaign;
   }

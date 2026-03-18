@@ -23,6 +23,7 @@ export class AppSocketGateway
   constructor(private readonly socketService: SocketService) {}
 
   afterInit(): void {
+    this.socketService.setServer(this.server);
     this.socketService.markReady();
   }
 
