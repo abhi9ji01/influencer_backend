@@ -8,6 +8,7 @@ import { AppLoggerService } from './common/logger/logger.service';
 import { RedisService } from './common/redis/redis.service';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 import { swaggerConfig } from './config/swagger.config';
+import { SocketService } from './modules/socket/socket.service';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -53,17 +54,21 @@ async function bootstrap(): Promise<void> {
 
   const dataSource = app.get(DataSource);
   const redisService = app.get(RedisService);
+  const socketService = app.get(SocketService);
   const backendUrl = `http://${host}:${port}/api`;
   const swaggerUrl = `http://${host}:${port}/docs`;
+  const socketUrl = `ws://${host}:${port}/ws`;
 
   logger.info('=================================', 'Bootstrap');
   logger.info('Influencer Backend Started', 'Bootstrap');
   logger.info('=================================', 'Bootstrap');
   logger.info(`DB Status      : ${dataSource.isInitialized ? 'connected' : 'disconnected'}`, 'Bootstrap');
   logger.info(`Redis Status   : ${redisService.getStatus()}`, 'Bootstrap');
+  logger.info(`Socket Status  : ${socketService.getStatus()}`, 'Bootstrap');
   logger.info(`Backend Port   : ${port}`, 'Bootstrap');
   logger.info(`Backend URL    : ${backendUrl}`, 'Bootstrap');
   logger.info(`Swagger URL    : ${swaggerUrl}`, 'Bootstrap');
+  logger.info(`Socket URL     : ${socketUrl}`, 'Bootstrap');
   logger.info('=================================', 'Bootstrap');
 }
 

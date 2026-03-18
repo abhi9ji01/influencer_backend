@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppLoggerModule } from './common/logger/logger.module';
 import { RedisModule } from './common/redis/redis.module';
+import { SocketModule } from './modules/socket/socket.module';
 import { databaseConfig } from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
@@ -20,6 +21,7 @@ import { UsersModule } from './modules/users/users.module';
     }),
     AppLoggerModule,
     RedisModule,
+    SocketModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: databaseConfig,
