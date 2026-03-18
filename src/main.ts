@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { AppLoggerService } from './common/logger/logger.service';
+import { RedisService } from './common/redis/redis.service';
 import { TransformResponseInterceptor } from './common/interceptors/transform-response.interceptor';
 import { swaggerConfig } from './config/swagger.config';
 
@@ -51,6 +52,7 @@ async function bootstrap(): Promise<void> {
   await app.listen(port);
 
   const dataSource = app.get(DataSource);
+  const redisService = app.get(RedisService);
   const backendUrl = `http://${host}:${port}/api`;
   const swaggerUrl = `http://${host}:${port}/docs`;
 
@@ -58,6 +60,7 @@ async function bootstrap(): Promise<void> {
   logger.info('Influencer Backend Started', 'Bootstrap');
   logger.info('=================================', 'Bootstrap');
   logger.info(`DB Status      : ${dataSource.isInitialized ? 'connected' : 'disconnected'}`, 'Bootstrap');
+  logger.info(`Redis Status   : ${redisService.getStatus()}`, 'Bootstrap');
   logger.info(`Backend Port   : ${port}`, 'Bootstrap');
   logger.info(`Backend URL    : ${backendUrl}`, 'Bootstrap');
   logger.info(`Swagger URL    : ${swaggerUrl}`, 'Bootstrap');
