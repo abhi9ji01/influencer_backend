@@ -44,6 +44,7 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup('docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      docExpansion: 'none',
     },
   });
 
