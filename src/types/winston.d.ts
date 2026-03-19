@@ -1,5 +1,7 @@
 declare module 'winston';
 declare module 'ioredis';
+declare module '@sendgrid/mail';
+declare module 'twilio';
 
 declare module '@nestjs/websockets' {
   export const WebSocketGateway: any;

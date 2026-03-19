@@ -9,6 +9,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
 import { InfluencersModule } from './modules/influencers/influencers.module';
+import { NotificationModule } from './modules/notifications/notification.module';
+import { OtpModule } from './modules/otp/otp.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { S3Module } from './modules/s3/s3.module';
 import { SocketModule } from './modules/socket/socket.module';
@@ -23,6 +25,8 @@ import { UsersModule } from './modules/users/users.module';
     AppLoggerModule,
     RedisModule,
     SocketModule,
+    NotificationModule,
+    OtpModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: databaseConfig,

@@ -102,9 +102,19 @@ export class UsersService {
       .getOne();
   }
 
+  async findPublicByEmail(email: string): Promise<User | null> {
+    return this.usersRepository.findOne({ where: { email } });
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
     Object.assign(user, updateUserDto);
+    return this.usersRepository.save(user);
+  }
+
+  async markUserAsVerified(id: string): Promise<User> {
+    const user = await this.findById(id);
+    user.isVerified = true;
     return this.usersRepository.save(user);
   }
 }

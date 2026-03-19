@@ -9,8 +9,10 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @ApiTags('Auth')
@@ -20,18 +22,39 @@ export class AuthController {
 
   @Public()
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user' })
-  @ApiOkResponse({ description: 'User registered successfully.' })
+  @ApiOperation({ summary: 'Register user and send OTP' })
+  @ApiOkResponse({ description: 'Registration OTP sent successfully.' })
   register(@Body() registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
   @Public()
+  @Post('register/verify-otp')
+  @ApiOperation({ summary: 'Verify registration OTP and create user' })
+  verifyRegistrationOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return this.authService.verifyRegistrationOtp(verifyOtpDto);
+  }
+
+  @Public()
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
-  @ApiOkResponse({ description: 'Login successful.' })
+  @ApiOkResponse({ description: 'Login successful or verification required.' })
   login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Public()
+  @Post('login/verify-otp')
+  @ApiOperation({ summary: 'Verify login OTP for unverified users' })
+  verifyLoginOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return this.authService.verifyLoginOtp(verifyOtpDto);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Send forgot password email' })
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
   }
 
   @Get('me')

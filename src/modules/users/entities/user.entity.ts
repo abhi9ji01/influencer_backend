@@ -42,6 +42,9 @@ export class User {
   @Column({ default: true })
   isActive!: boolean;
 
+  @Column({ default: false })
+  isVerified!: boolean;
+
   @OneToOne(() => Influencer, (influencer) => influencer.user)
   influencerProfile?: Influencer;
 
