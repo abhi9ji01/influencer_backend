@@ -8,6 +8,7 @@ import { databaseConfig } from './config/database.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
+import { ChatModule } from './modules/chat/chat.module';
 import { InfluencersModule } from './modules/influencers/influencers.module';
 import { NotificationModule } from './modules/notifications/notification.module';
 import { OtpModule } from './modules/otp/otp.module';
@@ -38,6 +39,7 @@ import { UsersModule } from './modules/users/users.module';
     BookingsModule,
     ReviewsModule,
     S3Module,
+    ChatModule,
   ],
   controllers: [AppController],
 })

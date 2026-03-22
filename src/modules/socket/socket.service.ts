@@ -18,11 +18,11 @@ export class SocketService {
     this.logger.info('Socket gateway is ready.', SocketService.name);
   }
 
-  markClientConnected(clientId: string): void {
+  markClientConnected(clientId: string, userIdentifier?: string): void {
     this.connectedClients += 1;
     this.status = 'connected';
     this.logger.info(
-      `Socket client connected: ${clientId}. Active clients: ${this.connectedClients}`,
+      `Socket client connected: ${clientId}${userIdentifier ? ` (${userIdentifier})` : ''}. Active clients: ${this.connectedClients}`,
       SocketService.name,
     );
   }
@@ -52,6 +52,31 @@ export class SocketService {
     });
   }
 
+  emitToChatRoom(
+    roomId: string,
+    event: string,
+    payload: Record<string, unknown>,
+  ): void {
+    if (!this.server) {
+      this.logger.warn(
+        `Socket room event ${event} skipped because gateway server is not ready.`,
+        SocketService.name,
+      );
+      return;
+    }
+
+    this.server.to(this.getChatRoomChannel(roomId)).emit(event, payload);
+    this.logger.info(
+      `Socket room event emitted: ${event} -> ${roomId}`,
+      SocketService.name,
+      {
+        roomId,
+        event,
+        payload,
+      },
+    );
+  }
+
   emitCampaignCreated(payload: Record<string, unknown>): void {
     this.emit('campaign.created', payload);
   }
@@ -68,11 +93,90 @@ export class SocketService {
     this.emit('notification.send', payload);
   }
 
+  emitChatRoomUpdated(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.room.updated', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.room.updated', payload);
+  }
+
+  emitChatMessageSent(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.message.sent', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.message.sent', payload);
+  }
+
+  emitChatMessageRead(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.message.read', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.message.read', payload);
+  }
+
+  emitChatMessageUpdated(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.message.updated', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.message.updated', payload);
+  }
+
+  emitChatMessageDeleted(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.message.deleted', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.message.deleted', payload);
+  }
+
+  emitChatTypingStarted(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.typing.started', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.typing.started', payload);
+  }
+
+  emitChatTypingStopped(payload: Record<string, unknown>): void {
+    const roomId = this.extractRoomId(payload);
+    if (!roomId) {
+      this.emit('chat.typing.stopped', payload);
+      return;
+    }
+
+    this.emitToChatRoom(roomId, 'chat.typing.stopped', payload);
+  }
+
+  getChatRoomChannel(roomId: string): string {
+    return `chat-room:${roomId}`;
+  }
+
   getStatus(): string {
     return this.status;
   }
 
   getConnectedClients(): number {
     return this.connectedClients;
+  }
+
+  private extractRoomId(payload: Record<string, unknown>): string | undefined {
+    const roomId = payload.roomId;
+    return typeof roomId === 'string' && roomId.trim() ? roomId : undefined;
   }
 }

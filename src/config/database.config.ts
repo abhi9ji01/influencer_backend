@@ -2,6 +2,9 @@ import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Booking } from 'src/modules/bookings/entities/booking.entity';
 import { Campaign } from 'src/modules/campaigns/entities/campaign.entity';
+import { ChatMessageAttachment } from 'src/modules/chat/entities/chat-message-attachment.entity';
+import { ChatMessage } from 'src/modules/chat/entities/chat-message.entity';
+import { ChatRoom } from 'src/modules/chat/entities/chat-room.entity';
 import { Influencer } from 'src/modules/influencers/entities/influencer.entity';
 import { Otp } from 'src/modules/otp/entities/otp.entity';
 import { Review } from 'src/modules/reviews/entities/review.entity';
@@ -21,6 +24,16 @@ export const databaseConfig = (
     url: databaseUrl,
     synchronize: configService.get<string>('DB_SYNC', 'false') === 'true',
     autoLoadEntities: false,
-    entities: [User, Influencer, Campaign, Booking, Review, Otp],
+    entities: [
+      User,
+      Influencer,
+      Campaign,
+      Booking,
+      Review,
+      Otp,
+      ChatRoom,
+      ChatMessage,
+      ChatMessageAttachment,
+    ],
   };
 };

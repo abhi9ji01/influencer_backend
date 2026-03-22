@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateInfluencerDto } from './dto/create-influencer.dto';
@@ -11,7 +11,17 @@ export class InfluencersService {
     private readonly influencersRepository: Repository<Influencer>,
   ) {}
 
-  create(userId: string, createInfluencerDto: CreateInfluencerDto) {
+  async create(userId: string, createInfluencerDto: CreateInfluencerDto) {
+    const existingProfile = await this.influencersRepository.findOne({
+      where: { userId },
+    });
+
+    if (existingProfile) {
+      throw new ConflictException(
+        'Influencer profile already exists for this user.',
+      );
+    }
+
     const profile = this.influencersRepository.create({
       ...createInfluencerDto,
       userId,
