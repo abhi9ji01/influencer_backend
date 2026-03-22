@@ -3,8 +3,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppLoggerModule } from './common/logger/logger.module';
+import { AppJwtModule } from './common/jwt/jwt.module';
 import { RedisModule } from './common/redis/redis.module';
 import { databaseConfig } from './config/database.config';
+import { validateEnvironment } from './config/env.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { BookingsModule } from './modules/bookings/bookings.module';
 import { CampaignsModule } from './modules/campaigns/campaigns.module';
@@ -22,8 +24,10 @@ import { UsersModule } from './modules/users/users.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
+      validate: validateEnvironment,
     }),
     AppLoggerModule,
+    AppJwtModule,
     RedisModule,
     SocketModule,
     NotificationModule,

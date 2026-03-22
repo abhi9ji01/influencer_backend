@@ -3,7 +3,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { NotificationService } from '../notifications/notification.service';
 import { OtpService } from '../otp/otp.service';
@@ -19,7 +18,6 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
     private readonly otpService: OtpService,
     private readonly notificationService: NotificationService,
   ) {}
@@ -123,10 +121,7 @@ export class AuthService {
     };
 
     return {
-      accessToken: this.jwtService.sign(payload, {
-        secret: this.configService.get<string>('JWT_SECRET', 'super-secret-key'),
-        expiresIn: this.configService.get<string>('JWT_EXPIRES_IN', '1d') as any,
-      }),
+      accessToken: this.jwtService.sign(payload),
       user: payload,
     };
   }

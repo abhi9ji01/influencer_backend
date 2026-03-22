@@ -1,12 +1,12 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
 import { AppLoggerService } from 'src/common/logger/logger.service';
+import { getAwsS3Config } from 'src/config/aws.config';
 
 @Injectable()
 export class S3Service {
@@ -170,17 +170,8 @@ export class S3Service {
       return this.client;
     }
 
-    const accessKeyId = this.configService.get<string>('AWS_ACCESS_KEY_ID');
-    const secretAccessKey = this.configService.get<string>('AWS_SECRET_ACCESS_KEY');
-    const region = this.configService.get<string>('AWS_REGION');
-    const bucketName = this.configService.get<string>('AWS_S3_BUCKET');
-    const publicBaseUrl = this.configService.get<string>('AWS_S3_PUBLIC_URL');
-
-    if (!accessKeyId || !secretAccessKey || !region || !bucketName) {
-      throw new InternalServerErrorException(
-        'AWS S3 configuration is missing. Please set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, and AWS_S3_BUCKET in .env.',
-      );
-    }
+    const { accessKeyId, secretAccessKey, region, bucketName, publicBaseUrl } =
+      getAwsS3Config(this.configService);
 
     const { S3Client } = require('@aws-sdk/client-s3');
 
@@ -239,4 +230,3 @@ export class S3Service {
     };
   }
 }
-
